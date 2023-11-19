@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Chats - Y.COM{% endblock %}
+
+{% block content %}
+{% include 'navbar.html' %}
+{% include 'messages_component.html' %}
+    <style>
+        button {
+            background: none;
+            border: none;
+            padding: 0;
+            margin: 0;
+            font: inherit;
+            cursor: pointer;
+            outline: inherit;
+            width: 100%;
+            text-align: left;
+        }
+
+        .chat-active { 
+            background-color: gainsboro;
+        }
+
+        .conversation:hover {
+            background: lightgray;
+        }
+
+        .container {
+            display: flex;  
+            width: 100%;
+            padding: 0;
+        }
+
+        
+        .contacts, .chat {
+            flex-grow: 1;
+            overflow-y: auto;
+            height: 90vh;
+        }
+
+        .chat {
+            width: 75vw;
+        }
+
+        .contacts {
+            width: 25vw;
+            overflow-y: auto;
+            padding: 15px;
+        }
+
+        .messages-container {
+            width: 90%;
+        }
+
+        .messages-send-container {
+            width: 95%;
+            display: grid;
+        }
+
+        .message-sent, .message-received {
+            max-width: 75%;
+            padding: 18px;
+            margin: 20px;
+            border-radius: 8px;
+        }
+
+        .message-sent { background-color: steelblue; color: whitesmoke;}
+        .message-received { background-color: lightgray; margin-left: auto;}
+
+        #message-send { margin: 2px; height: 40px;}
+        #message-input { margin: 2px; height: 40px; }
+    </style>
+    <div class="container">
+            <div class="chat" id="chat">
+                        <div class="messages-send-container">
+                            <form action="" method="post" id="message-form">
+                                {% csrf_token %}
+                                <input id="message-input" type="text" class="form-control" placeholder="Write your message..."/>
+                                <button id="message-send" class="btn btn-secondary" onclick="on_send_message()" >Send</button>
+                            </form>
+                        </div>
+
+                        <div id="messages">
+                        </div>
+
+                            <div id="chat-empty" style="display: none;">Write your first chat message!</div>
+            </div>
+
+            
+            <div class="contacts">
+                <h6>Conversations</h6>
+                {% if convos != None %}
+                    <form method="post" action="" id="convos"> 
+                        {% csrf_token %} 
+                        <ul style="list-style: none;
+                        margin: 0;
+                        padding: 0;">                   
+                            {% for convo in convos %} 
+                            <li class="conversation"><button id="{{convo.id}}" class="convo" style="height: 75px; margin-bottom: 4px; margin-top: 4px;" >
+                                {% if convo.avatar.name %}
+                                    <img src="{{convo.avatar.url}}" width="60px" style="border-radius: 60px;">
+                                {% else %}
+                                    <img src="/media/avatars/default.png" width="60px" style="border-radius: 60px;">
+                                {% endif %}
+                                <h8>&nbsp;&nbsp;{{ convo.name }}</h8>
+                            </button></li>
+                            {% endfor %}
+                        </ul>
+                    </form>
+                {% endif %}
+                <h7>Start a new conversation</h7>
+                    <hr>
+                    <form method="post" action="" id="convo-new"> 
+                        {% csrf_token %} 
+
+                        <ul style="list-style: none;
+                        margin: 0;
+                        padding: 0;">                   
+                            {% for contact in message_to %}  
+                            <li class="conversation"><button id="{{contact.id}}" class="new_convo" style="height: 75px; margin-bottom: 4px; margin-top: 4px;">
+                                {% if contact.avatar.name %}
+                                    <img src="{{contact.avatar.url}}" width="60px" style="border-radius: 60px;">
+                                {% else %}
+                                    <img src="/media/avatars/default.png" width="60px" style="border-radius: 60px;">
+                                {% endif %}
+                                <h8>&nbsp;&nbsp;{{contact}}</h8>
+                            </button></li>
+                            {% endfor %}
+                        </ul>
+                    </form>
+            </div>
+    </div>
+    <script src="{% static 'js/jsencrypt/bin/jsencrypt.min.js' %}"></script>
+    <script src="{% static 'js/chat.js' %}"></script>
+
+    <script>
+    let chatContainer = undefined;
+    let converstion_ids = [];
+    let chat_opened_id = undefined;
+
+    function get_convo(id, id_type="convo") {
+            var csrf_token = $('#convo-new [name="csrfmiddlewaretoken"]').val();
+            $.ajax({
+                url: '/api/chat-get/',  // URL of the Django view
+                type: 'POST',  // HTTP method
+                data: {
+                    'id':id,
+                    'id_type':id_type,
+                },
+                beforeSend: function(xhr, settings) {
+                    xhr.setRequestHeader("X-CSRFToken", csrf_token);
+                },
+                success: function(data) {
+                    chatContainer.innerHTML = ""
+                    
+                    open_chat = data;
+                    // Load chat history
+                    if(open_chat.messages != undefined) {
+                        document.getElementById("chat-empty").style.display = "none";
+                        user = '{{request.user.id}}'
+                        for(var i = 0; i < open_chat.messages.length; i++) {
+                            if(open_chat.messages[i].sender == user) {
+                                chatContainer.innerHTML += "<div class='message-sent'>" + open_chat.messages[i].body + "</div>";
+                            } else {
+                                chatContainer.innerHTML += "<div class='message-received'>" + open_chat.messages[i].body + "</div>";
+                            }
+                        }
+                    } else {
+                        chatContainer.innerHTML = `<div id="chat-empty" style="display: none; align-self:center; width:100%;">Write your first chat message!</div>`;
+                    }
+                    // Check if this conversation is added in the side panel, if not, do so
+                    if(!converstion_ids.includes(parseInt(open_chat.id))) {
+                        converstion_ids.unshift(parseInt(open_chat.id))  
+                        add_conversation_sidepanel(open_chat)
+                    }
+                    
+                    switch_active_chat(open_chat.id)
+                },
+                error: function(error) {
+                    url = new URL(window.location.href)
+                    url.searchParams.set('e', 516)
+                    window.location.href = url.toString()
+                }
+            });    
+    }
+
+    $(document).ready(function() {
+        chatContainer = document.getElementById('messages');
+        // Keep .children.children only as long as you keep the page structure !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // it is needed, because the conversation buttons are inside a <ul> tag
+        conversations = $("#convos ul li button")
+        for(var i = 0; i < conversations.length; i++) {
+            converstion_ids.push(parseInt(conversations[i].id));
+        }
+
+        var open_chat = "{{open_chat}}"
+
+        if(open_chat != 'None') { get_convo(open_chat) }
+
+        $('.new_convo').click(function() {
+            event.preventDefault();
+            get_convo(this.id, id_type="user")
+        });
+
+        $('.convo').click(function() {
+            event.preventDefault();
+            get_convo(this.id)
+        })
+    });
+    </script>
+{% endblock %}

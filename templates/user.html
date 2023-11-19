@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} Y.COM - {{request.user}} {% endblock %}
+
+{% block content %}
+    {% include 'navbar.html' %}
+
+    {% include 'messages_component.html' %}
+    <style>
+        .container {
+                width: 100%;
+                padding: 15px;
+                text-align: center;
+        }
+
+        /* .container * {
+            margin: 15px;
+        } */
+
+        #bio {
+            margin: 30px;
+        }
+
+        
+    </style>
+    
+    <div class="container">
+        {% csrf_token %}
+        <div class="profile-image">
+            {% if profile.avatar.name %}
+                <img src="{{profile.avatar.url}}" id="profile-img">
+            {% else %}
+                <img src="/media/avatars/default.png" id="profile-img">
+            {% endif %}
+        </div>
+                <h3 id="username">{{user.username}}</h3> 
+            {% if request.user == user %} 
+                <a id="profile-edit" href="{% url 'profile-edit' %}">Edit Profile</a> 
+            {% else %}
+                    <a class="btn btn-primary" href="#">Send a message</a>
+                    <button class="btn btn-primary" id="follow">
+                {% if follows %} Unfollow
+                {% else %} Follow
+                {% endif %}</button>
+            {% endif %}
+            <p class="profile-namesmail">{{user.first_name}} {{user.last_name}}</p>
+            <p class="profile-namesmail">{{user.email}}</p>
+            <p id="bio">{{profile.bio}}</p>
+            <small class="text-muted">Joined {{user.date_joined}}</small>
+            
+            <div id="post-container">
+
+            </div>
+    </div>
+    <script src="{%static 'js/posts.js'%}"></script>
+    <script>
+        $(document).ready(function(){
+            $('#follow').one('click', follow_on_click)
+            load_posts(auth=true, tag=null, profile_id='{{profile.id}}')
+            url_profile='{%url "profile" 2%}'
+            url_profile = '/' + url_profile.split('/')[1]
+            csrf_token = $('[name="csrfmiddlewaretoken"]').val()
+        })
+
+        function follow_on_click() {
+                btn = $(this)
+                $.ajax({
+                    url: '/api/follow/',
+                    method: 'POST',
+                    data: {'up_id': '{{profile.id}}'}, // Passing in profile.id, because the user id is not needed in the function
+                    beforeSend: function(xhr, settings) {
+                        xhr.setRequestHeader('X-CSRFToken', csrf_token)
+                    },
+                    success: function(data) {
+                        if(data.follower) {btn.text('Unfollow')}
+                        else {btn.text('Follow')}
+                        $('#follow').one('click', follow_on_click)
+                    }, 
+                    error: function(e) {
+                        url = new URL(window.location.href)
+                        url.searchParams.set('e', 511)
+                        window.location.href = url.toString()
+                    }
+                })
+        }
+    
+        
+    </script>
+{% endblock %}

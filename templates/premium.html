@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}Upgrade to YPremium{% endblock %}
+
+{% block content %}
+{% include 'navbar.html' %}
+{% include 'messages_component.html' %}
+
+<style>
+    .container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+
+    .promo * {
+        margin: 45px;
+    }
+
+    #payment-form {
+        width: 450px;
+    }
+
+    #payment-form input {
+        margin: 10px;
+    }
+</style>
+
+<div class="container">
+    {% if user.premium_id != null %}
+        <div class="premium"><br><br><br>
+            <h3>You are a premium member!</h3><br><br><br>
+            Y.PREMIUM is paid until: {{user.premium_time}}
+        </div>
+    {% else %} 
+        <div class="promo">
+            <h2>Upgrade to Premium today!</h2>
+            <hr>
+            <p>Enjoy better features, unlimited posts and more with YPremium!</p>
+            <small class="text-muted">starts at 9.99$/month</small>
+            <hr>
+            <h5>Fill out your credit card info and become a premium member: </h5>
+        </div>
+        <form action="" method="post" id="payment-form">
+            {% csrf_token %}
+            <div class="form-group">
+                <label>Card number:</label>
+                <input type="number" class="form-control" name="card-number">
+            </div>
+            <div class="form-group">
+                    <label>Expiry month:</label>
+                    <input type="number" class="form-control" name="exp_m">
+                    <label>Expiry year:</label>
+                    <input type="number" class="form-control" name="exp_yr">
+            </div>
+            <div class="form-group">
+                    <label>CVC:</label>
+                    <input type="number" class="form-control" name="cvc">
+            </div>
+            <input type="submit" value="PAY" class="btn btn-primary">
+        </form>
+    {% endif %} 
+</div>
+
+{% endblock %}

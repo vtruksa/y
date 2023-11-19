@@ -1,0 +1,1 @@
+from user.templatetags.custom_tags import get_profile_avatar

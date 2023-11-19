@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    {% include 'navbar.html' %}
+
+    {% include 'messages_component.html' %}
+
+    <div class="container">
+        <h3>{{tag.tag}}</h3>
+        <button id="block" class="btn btn-outline-danger">Add to blocked tags</button>
+        <div id="post-container">
+            
+        </div>
+    </div>
+
+    <script src="{% static 'js/posts.js'%}"></script>
+
+    <script>
+        $(document).ready(function() {
+            csrf_token = $('[name="csrfmiddlewaretoken"]').val()
+            tag = '{{tag.tag}}'
+            url_profile = '/'+'{%url "profile" 2%}'.split('/')[1]
+            load_posts(auth=true, tag=tag)
+            console.log('inhtml: ' + tag)
+        })
+
+        $('#block').one('click', function() {
+            $.ajax({
+                url: '/api/block-tag/',
+                method: 'GET',
+                data: {tag:'{{tag.tag}}'},
+                success: function(data) {
+                    console.log('Success blocking a tag')
+                    window.location.href = '../../'
+                },
+                error: function(data) {
+                    url = new URL(window.location.href)
+                    url.searchParams.set('e', 512)
+                    window.location.href = url.toString()
+                }
+            })
+        })
+    </script>
+{% endblock %}

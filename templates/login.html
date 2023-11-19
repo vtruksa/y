@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Login to Y.com{% endblock %}
+
+{% block content %}
+    {% include 'navbar.html' %}
+    {% include 'messages_component.html' %}
+    <div class="container" style="display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            margin-top: 160px;">
+        <form method="post" action="" name="form">
+            
+            <h3>Log In</h3>
+            {% csrf_token %}
+            <div class="form-group">
+                <label>Username</label>
+                <input class="form-control" name="username">
+                <small class="form-text text-muted"></small>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input class="form-control" name="password" type="password">
+                <small class="form-text text-muted"></small>
+            </div>      
+            <input type="submit" value="Log in" class="btn btn-primary" style="margin: 5px;"/>
+            <br>
+            <div style="margin: 20px;">Don't have an account yet? Register <a href="{% url 'register' %}">here</a></div>
+        </form>
+
+    </div>
+{% endblock %}

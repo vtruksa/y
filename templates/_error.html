@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load custom_tags %}
+
+{% block title %}Error{% endblock %}
+
+{% block content %}
+    {% include 'navbar.html' %}
+    {% include 'messages_component.html' %} 
+
+    <style>
+
+        #warning-sign-img {
+            transform: scale(0.75);
+            transition: transform 1s; /* Transition duration of 1 second */
+        }
+
+        #warning-sign-img.animate {
+            transform: scale(1); /* Scale up to full size */
+        }
+    </style>
+
+    <div class="container">
+        <img src="{% static 'img/warning.png' %}" style="opacity: 90%;" id="warning-sign-img"><br><br>
+        <h2>Ooops... Something went wrong</h2><br><br>
+        <div id="message">
+            {{e}}
+        </div>
+    </div>
+
+    <script>
+        // JS error dictionary
+        ers = {
+            511: "There was an error following this user",
+            512: "There was an error while blocking this tag",
+            513: "An error ocurred while changing your password",
+            514: "There was an error while deleting your account",
+            515: "An error ocurred while trying to unblock a tag",
+            516: "An error ocurred while attempting to load the chat",
+        }
+
+        $(document).ready(function() {
+            const image = document.querySelector('#warning-sign-img');
+            image.classList.add('animate');
+
+            params = new URLSearchParams(window.location.search);
+            if (params.has('e')) {$('#message').html(ers[params.get('e')])}
+        });
+    </script>
+{% endblock %}

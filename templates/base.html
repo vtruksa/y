@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+    <head>
+        <link rel="shortcut icon" type="image/png" href="{% static 'img/favicon.ico' %}"/>
+
+        <title>{% block title %}{% endblock %}</title>
+        {% load bootstrap5 %}
+        {% bootstrap_css %}
+        {% bootstrap_javascript %}
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    </head>
+
+    <body>
+        <style>
+            body {
+                font-size: 20px;
+            }
+        </style>
+
+        <script src="{% static 'js/main.js' %}"></script>
+        <script>
+            $(document).ready(function() {
+                logged_user = '{{request.user.id}}'
+                del_icon = '{% static "img/del_icon.png" %}'
+            })
+        </script>
+        {% block content %}
+        {% endblock %}
+
+    </body>
+</html>

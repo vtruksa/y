@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load custom_tags %}
+
+{% block title %}Y.com - Settings{% endblock %}
+
+{% block content %}
+    {% include 'navbar.html' %}
+    {% include 'messages_component.html' %} 
+
+    <div class="container">
+        <h3>Settings</h3>
+        <form method="post" action="" name="settings-form">
+            {% csrf_token %}
+            
+            {{form|render_bs5}}
+            <input type="submit" class="btn btn-primary" value="Save preferences">
+        </form>
+        <hr>
+        <h5>Blocked tags:</h5>
+        {% for t in tags %}
+            <div id="t{{t.id}}">{{t}}<button class="btn btn-outline-danger unblock-tag" id="del-{{t.id}}">X</button></div>
+        {% endfor %}
+
+        <hr>
+        <form method="post" action="" name="change-password">
+            <div class="form-group"><label>Old password: </label><input type="password" class="form-control" id="old-pass"></div>
+            <div class="form-group"><label>New password: </label><input type="password" class="form-control" id="new-pass"></div>
+            <button id="btn-new-pass" class="btn btn-outline-primary">Confirm password change</button>
+        </form>
+        <hr>
+        <button id="delete-account" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#del-modal">Delete account</button>
+    </div>
+
+    <div class="modal fade" id="del-modal" tabindex="-1" aria-labelledby="del-modal-label" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="del-modal-label">Delete an account</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete your account? This action is irreversible
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Cancel</button>
+              <button type="button" class="btn btn-danger" id="del-btn">Delete</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    <script>
+        $(document).ready(function(){
+            csrf_token = $('[name="csrfmiddlewaretoken"]').val()
+            btn_pass_prep()
+            btn_del_prep()
+            btn_dt_prep()
+        })
+
+        function btn_pass_prep() {
+            $('#btn-new-pass').one('click', function(e) {
+                e.preventDefault()
+
+                op = $('#old-pass')
+                np = $('#new-pass')
+                np2 = $('#new-pass2')
+                
+                if(np.val() != np2.val()) {
+                    console.log("Your new passwords don't match")
+                    op.val('')
+                    np.val('')
+                    np2.val('')
+                    return
+                } else { 
+                    $.ajax({
+                        url: '/api/set-password/',
+                        method: 'POST',
+                        beforeSend: function(xhr, settings) {
+                            xhr.setRequestHeader('X-CSRFToken', csrf_token)
+                        },
+                        data: {
+                            'op':op.val(),
+                            'np':np.val(),
+                        }, 
+                        success: function(data) {
+                            op.val('')
+                            np.val('')
+                            np2.val('')
+                        }, 
+                        error: function(data) {
+                            url = new URL(window.location.href)
+                            url.searchParams.set('e', 513)
+                            window.location.href = url.toString()
+                        }
+                    })
+                }
+            })
+        }
+    
+        function btn_del_prep() {
+            $('#del-btn').one('click', function() {
+                $.ajax({
+                    url:'/api/del-user/',
+                    method: 'POST',
+                    beforeSend:function(xhr, settings){
+                        xhr.setRequestHeader('X-CSRFToken', csrf_token)
+                    },
+                    success: function(data) {
+                        window.location.href = "../login"
+                    }, 
+                    error: function(data) {
+                        url = new URL(window.location.href)
+                        url.searchParams.set('e', 514)
+                        window.location.href = url.toString()
+                    }
+                })
+            })
+        }
+
+        function btn_dt_prep() {
+            $('.unblock-tag').one('click', function() {
+                id=$(this).attr('id').split('-')[1]
+                $.ajax({
+                    url:'/api/unblock-tag/',
+                    method: 'GET',
+                    data: {'tag':id},
+                    success: function(data) {
+                        $('#t'+id).hide()
+                        btn_dt_prep()
+                    }, 
+                    error: function(data) {
+                        console.log('Error: ' + data.e)
+                        url = new URL(window.location.href)
+                        url.searchParams.set('e', 515)
+                        window.location.href = url.toString()
+                    }
+                })
+            })
+        }
+    </script>
+{% endblock %}

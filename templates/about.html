@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About Y.COM{% endblock %}
+
+{% block content %}
+    {% include 'navbar.html' %}
+    {% include 'messages_component.html' %}
+
+    <div class="container">
+        <h2>Features</h2>
+        <br><hr><br>
+            <ul style="list-style-type: none; padding: 0;">
+                <li><h3>Home</h3>
+                    <p>On the homepage, you can see all the posts that have been posted so far, if you're logged in,
+                        you see posts from users you follow first, if you're not, they're displayed only base on the 
+                        '_visibility' variable of the Post object
+                    </p>
+                </li>
+                <li><h3>Login</h3>
+                    <p>Login page lets you log into an account that you've created or that has been precreated for the 
+                        sake of presenting the project as easily as possible.
+                    </p>
+                </li>
+                <li><h3>Register</h3>
+                    <p>Here you can create an account. The form is using default Django password authentication, so you need
+                        to think of a strong password, this is encrypted before being stored, so you don't have to be worried
+                        about me (or anyone else with access to the database) reading the password in the database
+                    </p>
+                </li>
+                <li><h3>Profile page</h3>
+                    <p>On the profile page, you can view users basic information and follow him, if you visit your own profile page, you can
+                        also access the edit profile page from here.                        
+                    </p>
+                </li>
+                <li><h3>Tags</h3>
+                    <p>Tag is detected thanks to the hashtag ('#') symbol at the start of the tag, it gets automatically created if you create a post.
+                        The tag itself is displayed as a link, if you click it, you will be redirected to the tag page 
+                        that contains all the posts using this tag. On the tag page you can block a tag so that you don't see
+                        any more posts containing the tag
+                    </p>
+                </li>
+                <li><h3>Settings</h3>
+                    <p>In the settings page I have created a few settings that affect how the webiste behaves</p>
+                </li>
+                <li><h3>Chats</h3>
+                    <p>Here you can chat with any user, users that you have started a conversation with already
+                        get displayed on the top and below them are all the other users, that you don't have a chat with yet
+                    </p>
+                </li>
+                <li><h3>Premium</h3>
+                    <p>Premium page uses Stripe API to let you buy Y.Premium for your account. The API is in the demo mode, 
+                        so a real card will not be functional, but you can use Stripes test cards to test out the Functionality.
+                        Card number to one of them is: 4242 4242 4242 4242, you can use any 3-digit CVC and any expiry date in the 
+                        future. In production, the test mode would be turned off and this card would of course not work
+                    </p>
+                </li>
+            </ul>
+    </div>
+
+{% endblock %}

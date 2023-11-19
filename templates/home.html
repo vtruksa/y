@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Y.com - Home{% endblock %}
+
+{% block content %}
+    <style>
+        .page-body {
+            margin: auto;
+            width: 40%;
+        }
+
+        #post-input {
+            display: grid;
+            grid-template-columns: 3fr 1fr;
+        }
+
+        #post-input input {
+            height: 40px;
+            margin: 5px;
+        } 
+
+        .post-btn {
+            margin: 10px;
+        }
+
+        .form-text {
+            margin: 10px;
+        }
+        
+    </style>
+    
+    {% include 'navbar.html' %}
+    {% include 'messages_component.html' %}
+    <div class="container">
+    {% if request.user.is_authenticated %}
+        
+                {% csrf_token %}
+                <div id="post-input">
+                <input type="text" name="post" id="form-text" class="form-control" placeholder="Tell us what's on your mind..." >
+                <button id="post-btn" class="btn btn-primary">Post</button></div>
+    {% else %}<br><br><br>
+        <h3>Welcome to Vaclav Truksa's portfolio project Y.COM</h3><br><br>
+        <p>It is a social media clone meant only to present my programming skills, please visit the 'about the project' page to learn more, log in to interact with the site and posts</p>
+        <hr>
+    {% endif %}
+    <h5 id="pop-tags">Popular tags: {% for tag in poptags %}<a href="{% url 'tag' tag|slice:'1:' %}">{{tag}}</a> {% endfor %}</h5>
+    <div id="post-container"></div>
+    </div>
+    
+    {% if request.user.is_authenticated %}
+        <script src="{% static 'js/home.js' %}"></script>
+    {% else %}
+    {% endif %}
+    <script src="{% static 'js/posts.js' %}"></script>
+    <script>
+        let csrf_token = ""
+        let url_profile = ""
+        $(document).ready(function() {
+            url_profile='{%url "profile" 2%}'
+            url_profile = '/' + url_profile.split('/')[1]
+            csrf_token = $('[name="csrfmiddlewaretoken"]').val()
+            load_posts(auth = '{{request.user.is_authenticated}}')
+        })
+    </script>
+{% endblock %}

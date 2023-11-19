@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% include 'navbar.html' %}
+{% if request.user.is_authenticated %}
+<div class="container">
+    <h2>Edit your profile</h2>
+
+    <form method="post" action="" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+            <label>Profile photo</label><br>
+            <img src="/media/{{form2.avatar.value}}" id="profile-img"><br>
+            <label for="id_avatar">Change:</label>
+            <input type="file" class="form-control" name="avatar" id="id_avatar">
+        </div>
+        {% for field in form %}
+            <div class="form-group">
+                <label>{{field.label}}</label>
+                <input type="{{field.field.widget.input_type}}" class="form-control" name='{{field.name}}' value='{{field.value}}'>
+                <small class="form-text text-muted"></small>
+            </div>
+        {% endfor %}
+        <div class="form-group">
+            <label>Bio:</label>
+            <textarea class="form-control" name='bio' rows="4">{{form2.bio.value}}</textarea>
+            <small class="form-text text-muted"></small>
+        </div>
+
+        
+
+        <input type="submit" value="Save changes" class="btn btn-primary"/>
+    </form>
+</div>
+{% endif %}
+{% endblock %}  

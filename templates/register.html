@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Register on Y.com{% endblock %}
+
+{% block content %}
+    {% include 'navbar.html' %}
+    {% include 'messages_component.html' %}
+    <div class="container" style="display: flex;
+                            justify-content: center;
+                            align-items: center;">
+        <form method="post" action="" name="form">
+            <h3>Register new user</h3>
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="form-group">
+                    <label>{{field.label}}</label>
+                    <input type="{{ field.field.widget.input_type }}" class="form-control" name='{{field.name}}'>
+                    <small class="form-text text-muted"></small>
+                </div>
+            {% endfor %}
+            <div class="form-group">
+                <label>Bio</label>
+                <textarea class="form-control" id='bio'></textarea>
+                <small class="form-text text-muted"></small>
+            </div>   
+            <!-- {% for field in forme %}
+                <div class="form-group">
+                    <label>{{field.label}}</label>
+                    <input type="{{field.field.widget.input_type }}" class="form-control" id='{{field.name}}'>
+                    <small class="form-text text-muted">{{field.widget.input_type}}</small>
+                </div>
+            {% endfor %} -->
+            <input type="submit" value="Register now" class="btn btn-primary" style="margin: 5px;"/>
+        </form>
+    </div>
+{% endblock %}
