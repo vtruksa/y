@@ -61,6 +61,7 @@
             url_profile = '/' + url_profile.split('/')[1]
             csrf_token = $('[name="csrfmiddlewaretoken"]').val()
             load_posts(auth = '{{request.user.is_authenticated}}')
+            console.log('{{request.user.is_authenticated}}')
         })
     </script>
 {% endblock %}

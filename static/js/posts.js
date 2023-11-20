@@ -1,4 +1,5 @@
 container = null
+authen = false
 last_loaded = 0
 t = null
 user = null
@@ -8,7 +9,7 @@ $(document).ready(function(){
     // Check wether the user has scrolled to the bottom of the page and if they have, try to load more posts 
     $(window).scroll(function(){
         if(Math.ceil($(window).scrollTop() + $(window).height()) >= Math.round($(document).height())) {
-            load_posts(auth=false, tag=t, profile_id=user)
+            load_posts(auth=authen, tag=t, profile_id=user)
         }
     });
 })
@@ -22,6 +23,7 @@ function scrollToTop() {
 
 function load_posts(auth=true, tag = null, profile_id=null) {
     t = tag
+    authen = auth
     logged_user = +logged_user
     url = '/api/get-posts/'
     new_html = ""
@@ -48,8 +50,9 @@ function load_posts(auth=true, tag = null, profile_id=null) {
             $('.reactions .btn').off('click').one('click', function() {btn_clicked($(this))})
             $('.react-btn').off('click').one('click', function() {btn_clicked($(this))})
             $('.del-btn').off('click').one('click', function() {btn_clicked($(this))})
-            if(auth==false) {
+            if(authen) {
                 $('.reactions .btn').prop('disabled', true)
+                console.log('disabling')
             }
         },
         error: function(jqXHR, textStatus, errorThrown) {
