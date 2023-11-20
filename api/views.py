@@ -207,7 +207,6 @@ def reactPost(request):
         up = UserProfile.objects.get(user=request.user)
         up.posts.add(post)
         up.save()
-        post = PostSerializer(post).data
 
         for t in tags:
             try:
@@ -216,8 +215,11 @@ def reactPost(request):
                 tag = Tag.objects.create(tag=t)
             tag.posts.add(p)
             tag.save()
-            p.tags_new.add(tag)
-            p.save()
+            post.tags_new.add(tag)
+            post.save()
+
+        post = PostSerializer(post).data
+        
     except Exception as e:
         return Response(data={'e':str(e)}, status=500)
     

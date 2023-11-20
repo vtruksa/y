@@ -64,6 +64,9 @@ def registerView(request):
             profile = UserProfile.objects.create(
                 user=user,
                 bio=request.POST.get('bio'))
+            settings = up_settings.objects.create(
+                u = user
+            )
             return redirect('home')
         else:
             messages.error(request, 'There was an error during the registration proccess')
