@@ -41,7 +41,9 @@
                 <button id="post-btn" class="btn btn-primary">Post</button></div>
     {% else %}<br><br><br>
         <h3>Welcome to Vaclav Truksa's portfolio project Y.COM</h3><br><br>
-        <p>It is a social media clone meant only to present my programming skills, please visit the 'about the project' page to learn more, log in to interact with the site and posts</p>
+        <p>It is a social media clone meant only to present my programming skills, please visit the 'about the project' page to learn more, log in to interact with the site and posts. 
+            There are some accounts I've premade for you to use, you will find their login details in the login page.
+        </p>
         <hr>
     {% endif %}
     <h5 id="pop-tags">Popular tags: {% for tag in poptags %}<a href="{% url 'tag' tag|slice:'1:' %}">{{tag}}</a> {% endfor %}</h5>
