@@ -213,7 +213,7 @@ def reactPost(request):
                 tag = Tag.objects.get(tag=t)
             except:
                 tag = Tag.objects.create(tag=t)
-            tag.posts.add(p)
+            tag.posts.add(post)
             tag.save()
             post.tags_new.add(tag)
             post.save()
@@ -221,6 +221,7 @@ def reactPost(request):
         post = PostSerializer(post).data
         
     except Exception as e:
+        print(e)
         return Response(data={'e':str(e)}, status=500)
     
     return Response(data={'post':post}, status=200)
