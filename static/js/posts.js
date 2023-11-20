@@ -8,7 +8,7 @@ $(document).ready(function(){
     // Check wether the user has scrolled to the bottom of the page and if they have, try to load more posts 
     $(window).scroll(function(){
         if(Math.ceil($(window).scrollTop() + $(window).height()) >= Math.round($(document).height())) {
-            load_posts(tag=t, profile_id=user)
+            load_posts(auth=false, tag=t, profile_id=user)
         }
     });
 })
@@ -26,11 +26,11 @@ function load_posts(auth=true, tag = null, profile_id=null) {
     url = '/api/get-posts/'
     new_html = ""
     data= {'l':last_loaded}
-    if(tag!=null) {
-        url = url + String(tag).replace('#', '')
+    if(t!=null) {   
+        url = url + String(t).replace('#', '')
         data = {'l':last_loaded,'tag':tag}
     } else if(profile_id!=null) {
-        data={'l':last_loaded, 'user_p':profile_id}
+        data={'l':last_loaded, 'tag':null, 'user_p':profile_id}
         user=profile_id
     }
     $.ajax({

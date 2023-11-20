@@ -108,17 +108,18 @@ def getPosts(request, tag=None):
     
     profile = UserProfile.objects.get(user=request.user)
     settings = UserProfileSettings.objects.get(u=request.user)
-
     if tag != None:
         try:
             tag = '#'+tag
             posts = Tag.objects.get(tag=tag).posts.all(f_tag=settings.filter_tag.all(), f_explicit=settings.filter_explicit)
         except Exception as e:
+            print('tag: '+ str(e))
             return Response(data={'exception':str(e)}, status=404)
     elif request.GET.get('user_p') != None:
         try:
             posts = UserProfile.objects.get(id=request.GET.get('user_p')).posts.all(f_tag=settings.filter_tag.all(), f_explicit=settings.filter_explicit)
         except Exception as e:
+            print('user: '+ str(e))
             return Response(data={'exception':str(e)}, status=500)
     else:
         posts = Post.objects.all(f_tag=settings.filter_tag.all(), f_explicit=settings.filter_explicit)
