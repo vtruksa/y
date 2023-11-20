@@ -50,9 +50,9 @@ function load_posts(auth=true, tag = null, profile_id=null) {
             $('.reactions .btn').off('click').one('click', function() {btn_clicked($(this))})
             $('.react-btn').off('click').one('click', function() {btn_clicked($(this))})
             $('.del-btn').off('click').one('click', function() {btn_clicked($(this))})
-            if(authen) {
+            if(authen=='False') {
                 $('.reactions .btn').prop('disabled', true)
-                console.log('disabling')
+                console.log('disabling: ' + authen)
             }
         },
         error: function(jqXHR, textStatus, errorThrown) {
