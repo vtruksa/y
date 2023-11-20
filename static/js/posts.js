@@ -45,9 +45,9 @@ function load_posts(auth=true, tag = null, profile_id=null) {
             container.append(new_html)
             last_loaded += data.length
             
-            $('.reactions .btn').one('click', function() {btn_clicked($(this))})
-            $('.react-btn').one('click', function() {btn_clicked($(this))})
-            $('.del-btn').one('click', function() {btn_clicked($(this))})
+            $('.reactions .btn').off('click').one('click', function() {btn_clicked($(this))})
+            $('.react-btn').off('click').one('click', function() {btn_clicked($(this))})
+            $('.del-btn').off('click').one('click', function() {btn_clicked($(this))})
             if(auth==false) {
                 $('.reactions .btn').prop('disabled', true)
             }
