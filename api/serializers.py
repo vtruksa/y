@@ -1,6 +1,7 @@
-import datetime
+import datetime, os
 from rest_framework import serializers
 from django.contrib.auth.models import User
+from dotenv import load_dotenv
 
 from user.models import Conversation, ChatMessage, UserProfile, UserProfileSettings
 from user.utils import decrypt
