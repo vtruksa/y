@@ -82,8 +82,10 @@ class Conversation(models.Model):
         return tmp
 
     def get_name(self, user):
-        users = self.users.all()
-        return (str(users[0])+str(users[1])).replace(str(user), "")
+        for u in self.users.all(): 
+            if u.user.username != user:
+                return u.user.username
+
 
 class ChatMessage(models.Model):
     sender = models.ForeignKey(UserProfile, on_delete=models.SET_NULL, null=True)

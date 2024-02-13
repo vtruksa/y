@@ -29,16 +29,14 @@ def loginView(request):
         try:
             user = User.objects.get(username=username.lower())
         except:
-            print('Wrong username')
             messages.error(request, 'You entered a wrong username')
-        
+
         user = authenticate(request, username=username, password=password)
 
         if user is not None:
             login(request, user)
             return redirect('home')
         else:
-            print('Wrong password')
             messages.error(request, 'You entered a wrong password')
     previous_url = request.META.get('HTTP_REFERER')
     context = {
@@ -155,8 +153,6 @@ def editProfileView(request):
         u2.bio = request.POST.get('bio')
         u.save()
         u2.save()
-
-        previous_url = request.META['HTTP_REFERER']
         return redirect('/profile/'+str(request.user.id)+'/')
    
     form = EditForm(instance=u)

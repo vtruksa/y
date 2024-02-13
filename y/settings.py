@@ -71,16 +71,17 @@ WSGI_APPLICATION = 'y.wsgi.application'
 
 
 # Dev database
-# DATABASES = {
-#     'default': {
-#         'ENGINE': os.environ.get('DEF_DB_ENGINE'),
-#         'NAME': BASE_DIR / os.environ.get('DEF_DB_NAME')
-#     }
-# }
-
-DATABASES = {
-    'default':dj_database_url.parse(os.environ.get('EXTERNAL_DB_URL'))
-}
+if DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': os.environ.get('DEF_DB_ENGINE'),
+            'NAME': BASE_DIR / os.environ.get('DEF_DB_NAME')
+        }
+    }
+else:
+    DATABASES = {
+        'default':dj_database_url.parse(os.environ.get('EXTERNAL_DB_URL'))
+    }
 
 
 # Password validation

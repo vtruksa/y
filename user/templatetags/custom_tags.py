@@ -19,7 +19,10 @@ def get_profile_avatar(profile, x, round):
 def render_bs5(form):
     html = ""
     for f in form:
-        input_type = f.field.widget.input_type
+        try:
+            input_type = f.field.widget.input_type
+        except:
+            input_type = 'tag'
         group = 'form-group'
         cl = 'form-control'        
         checked = ''
@@ -30,7 +33,10 @@ def render_bs5(form):
             if f.value(): checked = 'checked'
 
         html += '<div class='+group+'><label>'+str(f.label)+'</label>'
-        html += '<input type="' + input_type + '" name="'+ f.name +'" class="'+ cl +'" '+ checked +'>'
+        if input_type is not 'tag':
+            html += '<input type="' + input_type + '" name="'+ f.name +'" class="'+ cl +'" '+ checked +'>'
+        else:
+            html += '<textarea rows=4 name="'+f.name+'" class="'+cl+'"></textarea>'
         html += '<br><small class="form-text text-muted">'+f.help_text+'</small>'
         html+= '</div>'
 
