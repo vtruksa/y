@@ -18,5 +18,14 @@ class YViewsTest(YTestCase):
             'exp_yr':2028,
             'cvc':999
         })
+        self.assertEquals(res.status_code, 200)
 
-        print(res)
+    def test_premium_view_wrong(self):
+        self.login()
+        res = self.c.post('/premium/', {
+            'card-number':844,
+            'exp_m':10,
+            'exp_yr':2020,
+            'cvc':999
+        })
+        print(res.context)

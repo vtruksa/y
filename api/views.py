@@ -93,7 +93,7 @@ def follow(request):
         alg.UserVisibility([followee])
         return Response(data={'follower':f}, status=200)
     except Exception as e:
-        return Response(data={'e':e.e}, status=500)
+        return Response(data={'e':e}, status=500)
 
 @api_view(('GET',))
 def getPosts(request, tag=None):
@@ -171,7 +171,7 @@ def postPost(request):
 @api_view(('POST',))
 def likePost(request):
     if not request.user.is_authenticated:
-        return Response(data={'e':"You're trying to post a post without being logged in"}, status=401)
+        return Response(data={'e':"You're trying to like a post without being logged in"}, status=401)
     if request.user.is_authenticated:
         if request.POST.get('id') != None:
             try: 
@@ -259,11 +259,11 @@ def delPost(request):
             if request.user == post.author:
                 post.delete()
                 alg.UserVisibility(UserProfile.objects.get(user=request.user))
-                return Response('Success deleting a post')
+                return Response('Success deleting a post', status=200)
             else:
-                return Response("You cannot delete somebody else's post")
+                return Response("You cannot delete somebody else's post", status=404)
         except:
-            return Response("There was an unknown error deleting your post")
+            return Response("There was an unknown error deleting your post", status=500)
 
 # TODO finish user deletion
 @api_view(('POST', ))

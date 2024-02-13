@@ -47,8 +47,6 @@ def premiumView(request):
         user.premium_time = timezone.now() + relativedelta(months=1)
         user.premium_id = payment.id
 
-        print(user.premium_time)
-
         user.save()
 
         payment.confirm(return_url='http://127.0.0.1:8000/premium/')
