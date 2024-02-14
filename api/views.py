@@ -258,11 +258,11 @@ def delPost(request):
 
             if request.user == post.author:
                 post.delete()
-                alg.UserVisibility(UserProfile.objects.get(user=request.user))
+                alg.UserVisibility([UserProfile.objects.get(user=request.user)])
                 return Response('Success deleting a post', status=200)
             else:
                 return Response("You cannot delete somebody else's post", status=404)
-        except:
+        except Exception as e:
             return Response("There was an unknown error deleting your post", status=500)
 
 # TODO finish user deletion
@@ -273,7 +273,8 @@ def delUser(request):
     try:
         u = request.user
         u.delete()
-        logout(request)
+        try: logout(request)
+        except: pass
         return Response(status=200)
     except Exception as e:
         return Response(data={'e':"There was an error deleting your account: " + str(e)}, status=500)
@@ -293,10 +294,17 @@ def blockTag(request):
 def unblockTag(request):
     if not request.user.is_authenticated:
         return Response(data={'e':'You are trying to unblock a tag when youre not logged in'}, status=401)
-    sett = UserProfileSettings.objects.get(u=request.user.id)
-    tag = Tag.objects.get(id=request.GET.get('tag'))
+    try:
+        t = request.GET.get('tag')
+        if type(t) is str:
+            tag = Tag.objects.get(tag=t)
+        else:
+            tag = Tag.objects.get(id=t)
+        sett = UserProfileSettings.objects.get(u=request.user.id)
 
-    if tag in sett.filter_tag.all(): sett.filter_tag.remove(tag)
+        if tag in sett.filter_tag.all(): sett.filter_tag.remove(tag)
+    except Exception as e:
+        return Response(data={}, status=500)
     return Response(data={}, status=200)
 
 @api_view(('POST', ))
@@ -319,7 +327,7 @@ def chat_get_create(request):
     users = convo.users.all()
     data = ConversationSerializer(convo).data
     data['name'] = data['name'].replace(str(request.user), '')
-    return Response(data)
+    return Response(data, status=200)
 
 @api_view(('POST', ))
 def send_message(request):

@@ -134,5 +134,49 @@ class APITest(TestCase):
         req = self.factory.post('/api/del-post/', {'id':Post.objects.all()[0].id})
         force_authenticate(req, user=self.user)
         res = delPost(req)
-        print(res)
-        print(res.data)
+        self.assertEquals(res.status_code, 200)
+
+    def test_del_post_unauthorized(self):
+        self.__post('Test post')
+        req = self.factory.post('/api/del-post/', {'id':Post.objects.all()[0].id})
+        force_authenticate(req, user=self.user2)
+        res = delPost(req)
+        self.assertEquals(res.status_code, 404)
+
+    def test_del_user(self):
+        req = self.factory.post('/api/del-user/')
+        force_authenticate(req, user=self.user)
+        res = delUser(req)
+        self.assertEquals(res.status_code, 200)
+        self.assertEquals(len(User.objects.all()), 1)
+
+    def test_block_unblock_tag(self):
+        self.__post('#Test #block post')
+        req = self.factory.get('/api/block-tag/', {'tag':'#block'})
+        force_authenticate(req, user=self.user)
+        res = blockTag(req)
+        self.assertEquals(res.status_code, 200)
+        self.assertEquals(len(self.ups.filter_tag.all()), 1)
+
+        req = self.factory.get('/api/unblock-tag/', {'tag':'#block'})
+        force_authenticate(req, user=self.user)
+        res = unblockTag(req)
+        self.assertEquals(res.status_code, 200)
+
+    def __create_chat(self):
+        req = self.factory.post('/api/chat-get/', {'id':self.up2.id, 'id_type':'user'})
+        force_authenticate(req, user=self.user)
+        return chat_get_create(req)
+
+    def test_create_chat(self):
+        res = self.__create_chat()
+        self.assertEquals(res.status_code, 200)
+        self.assertIsNotNone(res.data)
+
+    def test_chat_message_send(self):
+        res = self.__create_chat()
+        con = Conversation.objects.all()[0]
+        req = self.factory.post('/api/send-message/', {'conversation_id':con.id, 'message':'Test'})
+        force_authenticate(req, user=self.user)
+        res = send_message(req)
+        self.assertEquals(res.status_code, 200)
